@@ -1,4 +1,4 @@
-<!-- All Credit goes to Lighthouse Labs, Full Glitch Repo can be found here: https://glitch.com/edit/#!/concise-chemistry?path=README.md:297:132 -->
+All Credit goes to Lighthouse Labs, Full Glitch Repo can be found here: https://glitch.com/edit/#!/concise-chemistry?path=README.md:297:132
 
 
 
