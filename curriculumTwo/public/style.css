@@ -6,10 +6,6 @@ body {
   margin: 20px;
 }
 
-h1 {
-  color: red;
-}
-
 main {
   background-color: #f0f0f0;
   border-radius: 6px;
@@ -27,7 +23,7 @@ ol {
 }
 
 li {
-  padding: 20px;
+  padding: 10px;
 }
 
 li:nth-child(odd) {
@@ -43,7 +39,7 @@ form {
 }
 
 button {
-  background-color: indigo;
+  background-color: cornflowerblue;
   border: none;
   border-radius: 3px;
   color: white;

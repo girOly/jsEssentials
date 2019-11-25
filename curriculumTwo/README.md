@@ -1,301 +1,238 @@
 All Credit goes to Lighthouse Labs, Full Glitch Repo can be found here: https://glitch.com/edit/#!/concise-chemistry?path=README.md:297:132
 
+![Logo](https://s3.amazonaws.com/thinkific/site_themes/logo_000/034/661/1486428574.medium.png?1486428574)](http://lighthouselabs.ca)
+# Javascript Essentials Part II
 
+### PRE-REQ
 
-[![Logo](https://s3.amazonaws.com/thinkific/site_themes/logo_000/034/661/1486428574.medium.png?1486428574)](http://lighthouselabs.ca)
-# Javascript Essentials Workshop
+If you are thinking about taking this course, you've probably attended Part I where we built a simple chat application using modern web tools such as Node.js, Websockets and JQuery.  If you didn't, please note that we'll start exactly where we left off. It would be wise to at the very least go through the [Part I notes](https://glitch.com/edit/#!/lhl-js-essentials?path=README.md:1:0) to warm up.
 
-## Introduction
+### GOAL
 
-Hello and thank you for joining us for this JavaScript Essentials Workshop.
+Today' session goal is to show you how modern web application are built by bringing together software components that may be located elsewhere but that can be combined to create more complex behaviour.  To do so, we'll learn how Javascript provides all the essential tools to GET data from other sources and manipulate that data to fit our needs.
 
-## The goal
+If you recall, by the end of the previous session we had managed to create a Chat Application, (show running version).  Our focus today will be to make this Chat Application much smarter by adding some super powers, very much the way that Messenger or Slack or many other conversational interfaces are becoming smarter:  with a BOT.
 
-Today's goal is to get acquainted with JavaScript-based Web programming by creating a simple chat application. We'll use modern tools \(Node.js, Web Sockets, etc.\) and touch upon many different technologies.
+Let's start by reviewing the very final version of the product we built during our last sesion:
 
-The objective is not to fully understand every line of code, but to understand server-client architecture and to be inspired by how much can be created with so little code.
+At any point during the session you can use the button at the top "Show Live".  This will show you the current version of your application running.   It should look something like this when you start:
 
-## The product
+![Screenshot](https://raw.githubusercontent.com/jugonzal/gitbook-node-chat-tutorial/master/assets/example-cropped.png)
 
-The finished app that we'll be building in just a couple of hours today will look and feel much like this.
+### CODE REVIEW
 
-![Example](https://github.com/lighthouse-labs/gitbook-node-chat-tutorial/raw/master/assets/example-cropped.png)
+There is much code to get acquainted with as we will be upgrading it with super powers.  How about we try to follow the fundamental sequence of events that makes our chat room possible:
 
-## HTML/CSS
-
-Let's start by exploring the HTML/CSS of this application. We'll to understanding it well in order to figure out how to convert it into a fully functional chat application.
-
-Go ahead, explore the files _public_/index.html and _public_/style.css using the left navigation menu.  
-
-# JavaScript
-
-Having spent sometime studying the look and feel of our web application, it is time we make it do something.  This is where we dive into Javascript to code the behaviour.   
-
-## JavaScript in the Browser
-
-Let's add some behaviour to your webpage so it actually does something useful. That's where JavaScript comes in.
-
-Much like with the CSS, we need to link our new **.js** code with our web page, our **.html** file.
-
-Add the following tags to the *bottom* of the HTML file.
-
-```html
-<script src="app.js"></script>
+1. The index.html page contains a form:
+```
+<form>
+  <input id="initials">
+  <input id="message">
+  <button>Send!</button>
+</form>
 ```
 
-Now whenever you refresh/load the web page, it will reference two separate JS files for the browser to download (at the end), one of which is external (3rd party) to our application. This 3rd party library called jQuery is there to make life easier. We don't **need** it, but with it we can write less code. This is why most websites use jQuery or other libraries like it.
-
-## Simple alert
-
-The second file **app.js** needs to exist in our workspace, so let's create it just like you created **style.css** earlier.
-
-It will be empty at first, but let's add the following code into it.
-
-```javascript
-alert('hello from the JS file');
+2. The app.js creates an event handler that "listens" to clicks on the `<button>Send!</button>` and uses websockets to emit (send) a message using websockets:
 ```
-
-Save the file and refresh the HTML file in your browser. When the page loads you should see an alert pop up that says your message.
-
-`alert` is a built in function that all browsers support, even though they may look slightly different on each browser. I'm guessing it's not your first time seeing one, so now you know how they happen.
-
-Any time you call a function in JS you have to use parentheses `()` after it, and within the brackets you put in data that you want to give the function. Programming functions are much like math functions. They take in values and can do some crunching and give you back a computed value, or in this case, give you back some behaviour like popup that message you passed into it.
-
-Every single predefined JavaScript function has documentation, so we can look up details about how they work. [Case in point](https://developer.mozilla.org/en-US/docs/Web/API/Window/alert).
-
-Very soon, we'll create our own function while using other functions. It's going to get a bit more real, so hold on to your suspenders!
-
-## Custom alert
-
-**Remove the `alert` code** and let's get down to business. We want to make it so when our `<form>` is submitted (via enter key or by clicking the send button) we read the text content of the input field (with `id="message"` in the HTML file) and do something with it. For now let's just `alert` it.
-
-```javascript
-$('form').on('click',function () {
-  var text = $("#message").val();
-  alert(text);
-  return false;
-});
-```
-
-Remember, type that out yourself. Don't copy paste it. Assuming you started and closed all the brackets, quotes, and semicolons correctly, it should add some interesting behaviour to the page.
-
-Save the file, and refresh the HTML page. Put some text into the input field and hit Enter or click Send. You should see it echoed back to you in an alert message. If not, review or otherwise seek help.
-
-### Explanation
-
-The code above isn't doing too much, but it does need to be reviewed before we move on.
-
-First, we use **jQuery** using the `$` function, telling it that we want to target all `form` elements on the page. There is only one form element on the page and it is the one at the bottom which contains both input fields and the button.
-
-Note how we don't use the `<`angle`>` brackets when targeting elements here, just like with CSS. Angle brackets are solely used to *define* tags in the HTML page.
-
-We then call/invoke another function called `on` on that returned form element, saying that we want to be notified anytime that a very specific *event* takes place.  In this case the event we care about is `submit`.
-
-Asking to be notified when a given event takes place and waiting for it to happen is a very popular programming paradigm called **event-driven programming**  Once the event takes place, we will be notified via our own custom function. That's right, `on` is a function that accepts another function as a parameter. Read that again. Look at the code. Remember that we pass in data into functions within the parentheses `()`. They're not on the same line, but they are there.
-
-Inside our function, the rest of the code is indented so that we know that it is within that function, just like we nest HTML tags with indentation. Make sure your code is indented correctly because improper indentation is a big source of confusion.
-
-This inside code is capturing the text value of the HTML element with the ID `message` and then passing it to `alert` so that we can see it.
-
-Lastly, the `return false` is there to tell the browser to cancel the original form submission logic (which is to attempt sending the form to the server, with loading spinner and everything.) This is common practice when adding custom behaviour to forms like we are doing here.
-
-# Node (JavaScript on the server)!
-
-So far we've been building a website with some static content and a bit of client-side interactivity.
-
-It's time to take it up a notch and graduate to "Web application" status. Server-side app logic is what separates a site from an app.
-
-Believe or not, each of you is running your own server.  However, thanks to the magic of cloud-computing, such server is running within **Glitch**.  This saves you a lot of headaches associated with operating a server.
-
-## Basic web server
-
-If you inspect the contents of the **index.js** file, you'll see there is some code there already.  This is the minimum amount of coding necessary in order for your cloud-server to run normally.  
-
-You can add the following line of code at the very beginning just to confirm that you are still in control of what your server does:
-
-```javascript
-console.log('hello from our node script!');
-```
-
-Notice that Glitch provides an option on the left navigation to open your **Logs**.  This is where all `console.log` messages will appear when the application is running.
-
-The output should look like this.
-
-```
-hello from our node script!
-```
-
-And there's our message, nice!
-
-# Express for our web server
-
-In our case, we're building a web server, more specifically a _chat 'server'_. So we need to listen for incoming HTTP requests and then send down the HTML, CSS and JavaScript that we wrote earlier for our chat client.
-
-While Node comes with basic HTTP handling support, a very (probably the most) popular 3rd party library (called "modules" in the Node community) named **Express** is used by most developers writing Web servers in Node. This is what we are using here.
-
-
-```javascript
-var express = require('express');
-var app = express();
-
-var server = require('http').createServer(app);
-
-app.use(express.static('public'));
-
-var port = process.env.PORT || 3000;
-
-server.listen(port, function () {
-  console.log('Server listening at port %d', port);
-});
-```
-
-### Explanation
-
-So a bunch of new code and syntax was just give to you there. Let's attempt to break it down.
-
-The first few lines are just loading external modules. We then tell the Express app to server all static content from the **public** folder.
-
-When all the setup work is done, we then tell the server to listen in on a certain port (in this case 3000.)
-
-So for now it's a simple web server serving only static (HTML, CSS and JavaScript) files to any HTTP/Web traffic coming its way.
-
-Let's try it out by running it using the **Show Live** option at the top. It will bring up the chat app page just like before, with no new functionality. The send button should be working as before, too!
-
-# Socket.IO for Real-time messaging
-
-Now it's time to add the last missing, yet crucial piece to our app: _chat functionality_!
-
-To do this, we will leverage yet another 3rd party Node module. It's called Socket.io.
-
-Check it out here: <http://socket.io/>.
-
-Socket.io will leverage a more core technology that browsers give us called Web Sockets.
-
-What's nice about Socket.io is that it will let us write similar JS code on both the client (browser) side and at the server (Node) side.
-
-## Step 1
-
-To make sure the correct package is added to our project check your dependencies in the file **package.json**:
-
-```json
-"dependencies": {
-  "express": "^4.12.4",
-  "socket.io": "*"
-},
-
-```
-
-## Step 2
-
-Now let's add some code in **index.js** that will use this library. This code block should be placed before/above `server.listen`.
-
-```javascript
-var io = require('socket.io')(server);
-
-io.on('connection', function (socket) {
-  // when the client emits 'new message', this listens and executes
-  socket.on('message', function (msg) {
-    io.emit('message', msg);
-  });
-});
-```
-
-## Step 3
-
-Next, we need to add similar logic to the client app.
-
-Open the **public/index.html** file and modify the `script` tags below so that we also reference and make use of Socket.IO. We can do this by adding one more script tag before our `app.js` script tag, so that it looks like this down there.
-
-```html
-<script src="https://code.jquery.com/jquery-3.1.1.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script src="app.js"></script>
-```
-
-## Step 4
-
-Open **public/app.js**, our client-side JS code file and let's add some code to send and receive messages from the browser.
-
-Add the following code to the very top of the file.
-
-```javascript
-var socket = io();
-```
-
-This is saying that `socket` is now a reference to the SocketIO library.
-
-## Step 5
-
-In that same file, replace the `alert` line from before with the following code:
-
-```javascript
-  socket.emit('message', text);
-  $('#message').val('');
-```
-
-The code above says to emit the textual message to the server instead of performing our temporary `alert` behavior. The second line in the code simply clears the input so that another message can be typed by the same user.
-
-We're not done yet, we need to listen for messages that are received from the server and append them into the message list. Add the following code at the bottom of the file:
-
-```javascript
-socket.on('message', function (msg) {
-  $('<li>').text(msg).appendTo('#history');
-});
-```
-
-This part tells the browser that any time a message is received from the real time web socket connection with the server, create a new `<li>` (list item) HTML element and append it to the messages `<ol>` (container).
-
-## Final code for app.js
-
-The `app.js` file should look like this.
-
-```javascript
-var socket = io();
-
 $("button").on('click', function() {
   var text = $("#message").val();
-  socket.emit('message', text);
+  var who = $("#initials").val();
+
+  socket.emit('message', who + ": " + text);
   $('#message').val('');
+
   return false;
 });
+```
 
+3. The server.js is listening for messages coming from any client connected and will simply "echo" the same message back to ALL clients:
+```
+socket.on('message', function (msg) {
+  console.log('Received Message: ', msg);
+  io.emit('message', msg);
+});
+```
+
+4. The app.js is listening for messages from the server and upon receiving one, it will simply use JQuery to add a new entry to the HTML.
+```
 socket.on('message', function (msg) {
   $('<li>').text(msg).appendTo('#history');
 });
-
 ```
 
-## Final code for index.js
+A good way to confirm that you understand the code now in your hands is to hack away.  Follow a quick, iterative approach when coding:  think of a feature you want to add, write as little code as possible, test and confirm your assumptions, repeat.
 
-The `index.js` file should look like this:
+Here are a few ideas to try:
 
-```javascript
-var express = require('express');
-var app = express();
+- Change the formatting of the message
+- Add a timestamp to each message
+- Display past messages when joining the chat room
+- Reply to simple questions such as "What time is it?"
 
-var http = require('http');
-var server = http.Server(app);
+### CONVERSATIONAL BOTS
 
-app.use(express.static('public'));
+Did you try to make your chat room answer simple questions? How would we go about implementing such a feature?   
 
-var io = require('socket.io')(server);
+1. First we need to realize that a message is meant as a question.  How would we do that?
 
-io.on('connection', function (socket) {
-  socket.on('message', function (msg) {
-    io.emit('message', msg);
-  });
-});
+We'll use the power of [Regular Expressions](https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions), an old technique that is very useful when searching for certain patterns within strings of characters.  For example the expression ` /\?$/ ` means: _"look for a question mark at the end of the message"_
 
-var port = process.env.PORT || 3000;
-server.listen(port, function () {
-  console.log('Server listening at port %d', port);
-});
+To keep things tidy, we will create a function that is ONLY responsible for figuring out if a message has a question mark at the end, using the regular expression above.
+
+```
+function isQuestion(msg) {
+  return msg.match(/\?$/)
+}
 ```
 
-## Whoa, it works!
+2. Then we should figure out what is being asked and calculate an answer.  A very simplistic approach would be to have a list of questions we understand.
 
-Make sure all your files are saved, and the Node server is still running, and give it a shot.
+As the only thing we care about at this time is the word "time" we can use a very similar approach.  Have you noticed how I try to write simple functions that do ONE very simple thing at a time?  And test.  If you master this simple cycle, you will make much more progress.  The *Single Responsibility Principle* is an important tenet of Software Development.
 
-That's right, it works! That's all it took. The basic chat functionality works. Have your peer go to the same URL that you're on and you guys should be able to communicate!
+```
+function askingTime(msg) {
+  return msg.match(/time/i)
+}
+```
 
-Note: newcomers to the chat room can't see any previous messages (message history). We would have to implement that functionality fo
+3. Then, instead of simply "echoing" the message, we should respond with our calculated answer.  The one place where it makes sense to do this is that time when a message arrives at the server.  Let's put it all together
+
+```
+if (!isQuestion(msg)) {
+  io.emit('message', msg);
+} else if (askingTime(msg)) {
+  io.emit('message', new Date);
+}
+```
+
+I'm happy that our bot is capable of answering the simple question: "what time is it?".  However, I'm starting to realize the complexity of building a bot that would truly be able to understand this and many other questions.  Which regular expressions would be useful if we want to expand our "smartness"?  Time is an easy thing to "calculate", but how about more complicated things?
+
+## APIS
+
+The good news is that the web is full of resources.  Most answers you need are out there, somewhere, available to be shared. We just need to know how to ask.  And we need to know WHO to ask.
+
+To get a feel for how much can be done with APIs, take a look at [Todd Motto's list of public APIs](https://github.com/toddmotto/public-apis)
+
+Our next trick will involve giving our Bot the ability to provide weather updates.  Weather is one of those things that we couldn't possibly calculate in our application, but that it is easily available on the web.
+
+### API urls
+
+To get started try the following URL in a new window of your browser:
+
+```
+https://www.metaweather.com/api/location/4118/
+```
+
+Before we start writing any code, let's understand what exactly is happening here:
+
+- In this particular case we are going to a website called `www.metaweather.com`.  Have you heard about it before?  Probably not, it is meant for computers, not humans.  Instead of a human interface (a webpage), it provides its data in a programming interface.  This is why it is called an API (Application Programming Interface)
+- Much like some sites that contain a lot of information, it organizes all its data in a hierarchical way, in this case by location.  We'll talk more about this soon.
+- When the site responds, the data comes back in a format that may be hard to read for humans, but it is super easy for programs.  This format is called JSON and it is particularly friendly to Javascript.
+
+### JSON
+
+```json
+{ "consolidated_weather":
+   [ { "id": 5093320921448448,
+       "weather_state_name": "Heavy Rain",
+       "weather_state_abbr": "hr",
+       "wind_direction_compass": "S",
+       "created": "2017-08-11T20:34:23.801200Z",
+       "applicable_date": "2017-08-11",
+       "min_temp": 19.16,
+       "max_temp": 23.448333333333334,
+       "the_temp": 22.886666666666667,
+       "wind_speed": 6.816575418346193,
+       "wind_direction": 179.21851889023347,
+       "air_pressure": 1012.51,
+       "humidity": 84,
+       "visibility": 11.815062534796787,
+       "predictability": 77 } ],
+  "time": "2017-08-11T19:10:55.555640-04:00",
+  "sun_rise": "2017-08-11T06:17:56.668717-04:00",
+  "sun_set": "2017-08-11T20:28:07.284434-04:00",
+  "timezone_name": "LMT",
+  "parent":
+   { "title": "Canada",
+     "location_type": "Country",
+     "woeid": 23424775,
+     "latt_long": "56.954681,-98.308968" },
+  "sources":
+   [ { "title": "BBC",
+       "slug": "bbc",
+       "url": "http://www.bbc.co.uk/weather/",
+       "crawl_rate": 180 } ],
+  "title": "Toronto",
+  "location_type": "City",
+  "woeid": 4118,
+  "latt_long": "43.648560,-79.385368",
+  "timezone": "America/Toronto" }
+```
+
+Reading JSON notation and figuring out how to access this data is half the battle of integrating data from the web into your application.  We should practice that.
+
+In your index.js file there is a section of code at the end that will allow you to play with different ways to explore the JSON data.
+```
+data = { consolidated_weather:  ... }
+console.log(data.title)
+```
+
+Go from there and see if you can come up with an expression that would simply tell you what the weather forecast for today is.
+
+### GET
+
+Now that we have discovered a particularly useful resource on the web, let's work on our index.js so it knows weather.
+
+```
+function getWeather(callback) {
+  var request = require('request');
+  request.get("https://www.metaweather.com/api/location/4118/", function (error, response) {
+    if (!error && response.statusCode == 200) {
+      var data = JSON.parse(response.body);
+      callback(data.consolidated_weather[0].weather_state_name);
+    }
+  })
+}
+```
+
+There are 2 things that are super important in this small snippet of code:
+
+1. Notice that `request.get` function?  For now think of it like your very own `curl` inside your javascript code.  What else is interesting about the parameters that we pass to that function?   CALLBACKS!   Where did we see this before?  
+
+2. Whenever data is received in JSON, we can use `JSON.parse` to convert plain text data into an actual javascript object.  After this point any element of data can be accessed as if it was a variable in our application, using our dot-notation approach.
+
+### CALLBACKS
+
+We are almost at the end of our session.  But for things to work well, we have to integrate that `function getWeather()` into the rest of our code.  Your instinct should be to try to do something very similar to what we did earlier today to handle the _Time_ questions.
+
+Before we go through the solution, give it a try on your own following these tips:
+
+1. Where in the `getWeather` function is the answer we need?
+2. How is that answer being sent out from the function?
+3. What is the role of the callback parameter?
+
+To keep you at the edge of your seats, I'll give you the WRONG answer:
+
+```
+else if (askingWeather(msg)) {
+  io.emit('message', getWeather())
+}
+```
+
+Why is this wrong?  Look at the CORRECT version and compare:
+
+```
+else if (askingWeather(msg)) {
+  getWeather(function(weather) {
+    io.emit('message', weather)
+  })
+}
+```
+
+Notice how `getWeather` will take one parameter which indicates what to do AFTER the proper response from the API is received.  The function will wait for as long as it needs before executing that simple line of code.  That callback is a very common pattern in javascript.
+
+### WRAP-UP
+
+If you are following step by step, you should be able to ask for the weather in your chat room.  Remember to ask nicely by ending with a question mark (?).  
+
+Between Regular Expressions, JSON and Callbacks, we did cover quite a bit of ground on our server-side javascript skills, so do not worry if you are still munching over some of the concepts.    
